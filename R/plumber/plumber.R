@@ -23,21 +23,3 @@ mpg_pred <- function(hp, cyl) {
             cyl = as.numeric(cyl)
           ))
 }
-
-#* Return a plot of filtered data
-#* @param cyl Cylinder value to filter mtcars to
-#* @jpeg
-#* @get /mpgplot
-mpg_plot <- function(cyl) {
-  plot_data <- mtcars
-  if (!missing(cyl)) {
-    cyl_filter <- as.numeric(cyl)
-    plot_data <- mtcars %>% 
-      filter(cyl == cyl_filter)
-  }
-  plot_data %>% 
-    filter(cyl == cyl_filter) %>% 
-    ggplot(aes(x = hp, y = mpg)) +
-    geom_point() +
-    theme_bw()
-}
