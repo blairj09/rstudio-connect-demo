@@ -1,0 +1,87 @@
+---
+title: "Crypto"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: columns
+runtime: shiny
+---
+
+```{r global, include=FALSE}
+library(flexdashboard)
+library(tidyverse)
+library(cryptor)
+```
+
+```{r data}
+reactive_data <- reactiveValues()
+reactive_data$crypto <- tibble()
+observe({
+  invalidateLater(1000)
+  new_data <- get_price(c("BTC", "ETH", "LTC"), "USD") %>% 
+    mutate(timestamp = Sys.time())
+  isolate(
+    reactive_data$crypto <- bind_rows(reactive_data$crypto,
+                                      new_data) %>% 
+      tail(100)
+  )
+})
+```
+
+
+Column
+-----------------------------------------------------------------------
+
+### Bitcoin
+
+```{r}
+renderPlot({
+  reactive_data$crypto %>% 
+    filter(fromsymbol == "BTC") %>% 
+    ggplot(aes(x = timestamp, y = price)) +
+    geom_line() +
+    scale_y_continuous(labels = scales::dollar) +
+    theme_bw() +
+    labs(
+      x = "Time",
+      y = "Price (USD)"
+    )
+})
+```
+
+### Ethereum
+
+```{r}
+renderPlot({
+  reactive_data$crypto %>% 
+    filter(fromsymbol == "ETH") %>% 
+    ggplot(aes(x = timestamp, y = price)) +
+    geom_line() +
+    scale_y_continuous(labels = scales::dollar) +
+    theme_bw() +
+    labs(
+      x = "Time",
+      y = "Price (USD)"
+    )
+})
+```
+
+
+### Litecoin
+
+```{r}
+renderPlot({
+  reactive_data$crypto %>% 
+    filter(fromsymbol == "LTC") %>% 
+    ggplot(aes(x = timestamp, y = price)) +
+    geom_line() +
+    scale_y_continuous(labels = scales::dollar) +
+    theme_bw() +
+    labs(
+      x = "Time",
+      y = "Price (USD)"
+    )
+})
+```
+
+
+
